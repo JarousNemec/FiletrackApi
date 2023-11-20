@@ -465,11 +465,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mortar\\RiderProjects\\AspNetApiTemplate\\AspNetApiTemplate\\AspNetApiTemplate.csproj",
-      "projectName": "AspNetApiTemplate",
-      "projectPath": "C:\\Users\\mortar\\RiderProjects\\AspNetApiTemplate\\AspNetApiTemplate\\AspNetApiTemplate.csproj",
+      "projectUniqueName": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\FiletrackAPI.csproj",
+      "projectName": "FiletrackAPI",
+      "projectPath": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\FiletrackAPI.csproj",
       "packagesPath": "C:\\Users\\mortar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mortar\\RiderProjects\\AspNetApiTemplate\\AspNetApiTemplate\\obj\\",
+      "outputPath": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\mortar\\AppData\\Roaming\\NuGet\\NuGet.Config",

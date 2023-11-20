@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rYjGLPpolHY73WyQG7x/D2A2n2t3WlVUpFYo82W8jgTgDVOyPjarA9S8+Y4iPGYlvwepxSXeIuqRMsOWUbzkNA==",
+  "dgSpecHash": "aIt3jdBEjloGvnj4g0n4m2bWmIUg+CTykwxTwjnfuLNwkT3YZbyKpfZ2dkMTr9iLmKMtkVRTGF7gA1PWoeHn0Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\mortar\\RiderProjects\\AspNetApiTemplate\\AspNetApiTemplate\\AspNetApiTemplate.csproj",
+  "projectFilePath": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\FiletrackAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mortar\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.3\\microsoft.aspnetcore.openapi.7.0.3.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",

@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "hvTIUx9KT/t0jKjt+47FyVv2g4VQYO43HsvSasYQux4=",
-  "Source": "AspNetApiTemplate",
-  "BasePath": "_content/AspNetApiTemplate",
+  "Hash": "wNRcl03hN8a3yYqcL9qkyMShdUTlrTsWrG9loC/iEio=",
+  "Source": "FiletrackAPI",
+  "BasePath": "_content/FiletrackAPI",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
