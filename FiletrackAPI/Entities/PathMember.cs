@@ -1,6 +1,6 @@
 ﻿namespace FiletrackWebInterface.Entities;
 
-public class FilesPathItem
+public class PathMember
 {
     public string Id { get; set; }
     public short Order { get; set; }

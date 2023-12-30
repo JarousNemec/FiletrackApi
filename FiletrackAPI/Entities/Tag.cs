@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace FiletrackWebInterface.Entities;
+﻿namespace FiletrackAPI.Entities;
 
 public class Tag
 {

@@ -1,4 +1,6 @@
-﻿using FiletrackAPI.Services;
+﻿using FiletrackAPI.Entities;
+using FiletrackAPI.Models;
+using FiletrackAPI.Services;
 using FiletrackWebInterface.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,17 +32,17 @@ public class SettingsController : Controller
         }
         
         [HttpPost]
-        public IActionResult UpdateTags(List<Tag> tags)
+        public IActionResult UpdateTags(TagsUpdateRequest model)
         {
-            _settingsService.UpdateTags(tags);
+            _settingsService.UpdateTags(new List<Tag>(model.ListToUpdate));
             var result = _settingsService.GetAllTags();
             return Ok(result);
         }
         
         [HttpPost]
-        public IActionResult UpdatePath( string path)
+        public IActionResult UpdatePath(PathUpdateRequest model)
         {
-            _settingsService.UpdatePath(path);
+            _settingsService.UpdatePath(new List<PathMember>(model.UpdatedMembers));
             var result = _settingsService.GetPath();
             return Ok(result);
         }
