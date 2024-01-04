@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "/RtkJcdhLToSSx4tcQ7+UGnkMI8FLY0N+6PwQHqP2NdSDboYxWWgc/N3m0lUMK5BXSw8zSjeeYZy2njKltnHcw==",
+  "dgSpecHash": "4Hs3vg5wz+dOLCIvieYoAgTiE5OnF2CGc5QOuQaG+CrN1K7DTIJnvkLpKHGG5w2o3usIvwW49qtNZsEzFz5HEg==",
   "success": true,
   "projectFilePath": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\FiletrackAPI.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\mortar\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
+    "C:\\Users\\mortar\\.nuget\\packages\\azure.core\\1.36.0\\azure.core.1.36.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
+    "C:\\Users\\mortar\\.nuget\\packages\\azure.storage.blobs\\12.20.0-beta.1\\azure.storage.blobs.12.20.0-beta.1.nupkg.sha512",
+    "C:\\Users\\mortar\\.nuget\\packages\\azure.storage.common\\12.19.0-beta.1\\azure.storage.common.12.19.0-beta.1.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.3\\microsoft.aspnetcore.openapi.7.0.3.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
@@ -34,6 +36,7 @@
     "C:\\Users\\mortar\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\system.identitymodel.tokens.jwt\\6.24.0\\system.identitymodel.tokens.jwt.6.24.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\system.io.filesystem.accesscontrol\\5.0.0\\system.io.filesystem.accesscontrol.5.0.0.nupkg.sha512",
+    "C:\\Users\\mortar\\.nuget\\packages\\system.io.hashing\\6.0.0\\system.io.hashing.6.0.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",

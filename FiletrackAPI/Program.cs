@@ -1,5 +1,6 @@
 using FiletrackAPI.Services;
 using FiletrackWebInterface.Helpers;
+using FiletrackWebInterface.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IDbService, DbService>();
+builder.Services.AddScoped<IJobsService, JobsService>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 

@@ -11,4 +11,7 @@ public class AppSettings
     public string InitialCatalog { get; set; }
 
     public bool TrustServerCertificate { get; set; }
+    public string TempDirName{ get; set; }
+    public string BlobConnectionString { get; set; }
+    public string BlobContainer { get; set; }
 }

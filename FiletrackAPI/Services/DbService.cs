@@ -15,6 +15,9 @@ public interface IDbService
     public void AddTag(Tag tag);
     public void AddPathMember(PathMember member);
     public void RemovePathMembers();
+    public void AddJobFiles(List<JobFile> files);
+    public void AddJobAttributes(List<JobAttribute> attributes, string jobId);
+    public void AddJob(Job job);
 }
 
 public class DbService : IDbService
@@ -68,7 +71,6 @@ public class DbService : IDbService
         }
         return result;
     }
-    
     public void RemoveTag(string id)
     {
         using var connection = new SqlConnection(_connString);
@@ -76,6 +78,58 @@ public class DbService : IDbService
         using var command = connection.CreateCommand();
         command.CommandText = $"DELETE FROM Tags WHERE Id = '{id}'";
         command.ExecuteNonQuery();
+    }
+    
+    public void AddJob(Job job)
+    {
+        using var connection = new SqlConnection(_connString);
+        string query = $"Insert Into Jobs (Id, State, AuthorId, Description) values (@Id, @State, @AuthorId, @Description)";
+        using (SqlCommand command = new SqlCommand(query,connection))
+        {
+            command.Parameters.AddWithValue("@Id", job.Id);
+            command.Parameters.AddWithValue("@State", job.State);
+            command.Parameters.AddWithValue("@AuthorId", job.AuthorId);
+            command.Parameters.AddWithValue("@Description", job.Description);
+            connection.Open();
+            command.ExecuteNonQuery();
+        }
+    }
+    public void AddJobAttributes(List<JobAttribute> attributes, string jobId)
+    {
+        using var connection = new SqlConnection(_connString);
+        connection.Open();
+        string query = $"Insert Into JobAttributes (Id, AttributeId, Value, JobId) values (@Id, @AttributeId, @Value, @JobId)";
+        foreach (var attribute in attributes)
+        {
+            using (SqlCommand command = new SqlCommand(query,connection))
+            {
+                command.Parameters.AddWithValue("@Id", Guid.NewGuid().ToString());
+                command.Parameters.AddWithValue("@AttributeId", attribute.id);
+                command.Parameters.AddWithValue("@Value", attribute.value);
+                command.Parameters.AddWithValue("@JobId", jobId);
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+    
+    public void AddJobFiles(List<JobFile> files)
+    {
+        using var connection = new SqlConnection(_connString);
+        connection.Open();
+        string query = $"Insert Into JobFiles (Id, JobId, FileName, Type, BlobUrl, BlobPath) values (@Id, @JobId, @FileName, @Type, @BlobUrl, @BlobPath)";
+        foreach (var file in files)
+        {
+            using (SqlCommand command = new SqlCommand(query,connection))
+            {
+                command.Parameters.AddWithValue("@Id", file.Id);
+                command.Parameters.AddWithValue("@JobId", file.JobId);
+                command.Parameters.AddWithValue("@FileName", file.FileName);
+                command.Parameters.AddWithValue("@Type", file.Type);
+                command.Parameters.AddWithValue("@BlobUrl", file.BlobUrl);
+                command.Parameters.AddWithValue("@BlobPath", file.BlobPath);
+                command.ExecuteNonQuery();
+            }
+        }
     }
 
     
