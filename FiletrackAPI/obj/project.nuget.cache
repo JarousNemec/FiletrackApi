@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "4Hs3vg5wz+dOLCIvieYoAgTiE5OnF2CGc5QOuQaG+CrN1K7DTIJnvkLpKHGG5w2o3usIvwW49qtNZsEzFz5HEg==",
+  "dgSpecHash": "Xu8MaMsOoKj3Fy7fefZIqdjuhqCMQ9KAOI+/29hzdcL8iZPvxPVD0DowBrIJh7l9d0LPh5Lcra9JPmQkcfuBhg==",
   "success": true,
   "projectFilePath": "C:\\Users\\mortar\\RiderProjects\\FiletrackApi\\FiletrackAPI\\FiletrackAPI.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\mortar\\.nuget\\packages\\aspose.zip\\23.12.0\\aspose.zip.23.12.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\azure.core\\1.36.0\\azure.core.1.36.0.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
     "C:\\Users\\mortar\\.nuget\\packages\\azure.storage.blobs\\12.20.0-beta.1\\azure.storage.blobs.12.20.0-beta.1.nupkg.sha512",

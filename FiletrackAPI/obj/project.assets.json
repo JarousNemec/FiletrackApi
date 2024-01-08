@@ -2,6 +2,22 @@
   "version": 3,
   "targets": {
     "net7.0": {
+      "Aspose.Zip/23.12.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Text.Encoding.CodePages": "4.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Aspose.Zip.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Aspose.Zip.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Azure.Core/1.36.0": {
         "type": "package",
         "dependencies": {
@@ -816,7 +832,7 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         },
         "compile": {
-          "lib/net6.0/_._": {
+          "lib/net6.0/System.Text.Encoding.CodePages.dll": {
             "related": ".xml"
           }
         },
@@ -907,6 +923,29 @@
     }
   },
   "libraries": {
+    "Aspose.Zip/23.12.0": {
+      "sha512": "9tYTZNRkwYc4vZk/1k8ZzL6in+a2I5lxA9SakyQ3aJJFFClU+stT4Z5uygwj0MjEHXlzB6MUlhovAPxyH6MjwQ==",
+      "type": "package",
+      "path": "aspose.zip/23.12.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Help/Aspose.ZIP.chm",
+        "License/Aspose_End-User-License-Agreement.txt",
+        "License/thirdpartylicenses.Aspose.ZIP.for.NET.pdf",
+        "aspose.zip.23.12.0.nupkg.sha512",
+        "aspose.zip.nuspec",
+        "docs/README.md",
+        "images/aspose_zip-for-net.png",
+        "lib/net20/Aspose.Zip.dll",
+        "lib/net20/Aspose.Zip.xml",
+        "lib/net40/Aspose.Zip.dll",
+        "lib/net40/Aspose.Zip.xml",
+        "lib/netstandard2.0/Aspose.Zip.dll",
+        "lib/netstandard2.0/Aspose.Zip.xml",
+        "lib/readme.txt"
+      ]
+    },
     "Azure.Core/1.36.0": {
       "sha512": "vwqFZdHS4dzPlI7FFRkPx9ctA+aGGeRev3gnzG8lntWvKMmBhAmulABi1O9CEvS3/jzYt7yA+0pqVdxkpAd7dQ==",
       "type": "package",
@@ -2649,6 +2688,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
+      "Aspose.Zip >= 23.12.0",
       "Azure.Storage.Blobs >= 12.20.0-beta.1",
       "Microsoft.AspNetCore.OpenApi >= 7.0.3",
       "Microsoft.Data.SqlClient >= 5.2.0-preview4.23342.2",
@@ -2694,6 +2734,10 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "Aspose.Zip": {
+            "target": "Package",
+            "version": "[23.12.0, )"
+          },
           "Azure.Storage.Blobs": {
             "target": "Package",
             "version": "[12.20.0-beta.1, )"

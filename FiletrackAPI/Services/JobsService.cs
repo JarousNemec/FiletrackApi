@@ -1,14 +1,11 @@
-﻿using System.IO.Compression;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+﻿using System.Text.Json;
+using Aspose.Zip;
 using FiletrackAPI.Entities;
 using FiletrackAPI.Models;
 using FiletrackAPI.Services;
 using FiletrackWebInterface.Entities;
 using FiletrackWebInterface.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace FiletrackWebInterface.Services;
@@ -20,17 +17,21 @@ public interface IJobsService
     CompleteJobInfo GetCompleteJob(string modelJobId);
     Task<int> UpdateJob(UpdateJobRequestModel model);
     void DeleteJob(string jobId);
+    Task<string> DownloadJob(string jobId);
 }
 
 public class JobsService : IJobsService
 {
     private readonly IOptions<AppSettings> _appsettings;
     private readonly IDbService _dbService;
-
-    public JobsService(IOptions<AppSettings> appSettings, IDbService dbService)
+    private readonly IAzureBlobService _azureBlobService;
+    private readonly ITempStorageService _tempStorageService;
+    public JobsService(IOptions<AppSettings> appSettings, IDbService dbService, IAzureBlobService azureBlobService, ITempStorageService tempStorageService)
     {
         _dbService = dbService;
         _appsettings = appSettings;
+        _azureBlobService = azureBlobService;
+        _tempStorageService = tempStorageService;
     }
 
     public List<Dictionary<string, string>> GetJobsInState(JobState state)
@@ -81,7 +82,7 @@ public class JobsService : IJobsService
 
         var attributes = ParseJobAttributes(updateJobRequestModel.JobAttributes);
         var blobPathMembers = _dbService.GetPath();
-        
+
         //update currentFiles in Filetrack
         List<string> currentFiles = updateJobRequestModel.JobCurrentFiles;
 
@@ -95,9 +96,10 @@ public class JobsService : IJobsService
         {
             await UpdateCurrentFiles(currentFiles, job.Id);
         }
-        
+
         //add new files to Filetrack
-        var jobFiles = await CreateJobFilesAndUploadToBlob(updateJobRequestModel.JobAddedFiles, blobPathMembers, attributes,
+        var jobFiles = await CreateJobFilesAndUploadToBlob(updateJobRequestModel.JobAddedFiles, blobPathMembers,
+            attributes,
             _appsettings.Value.BlobConnectionString, _appsettings.Value.BlobContainer, job);
         _dbService.AddJobFiles(jobFiles);
 
@@ -143,53 +145,21 @@ public class JobsService : IJobsService
 
         _dbService.DeleteJobFiles(toDelete);
         DeleteJobFilesInBlob(toDelete, _appsettings.Value.BlobConnectionString, _appsettings.Value.BlobContainer);
-        
-        if(!attributesUpdated)
+
+        if (!attributesUpdated)
             return;
 
         foreach (var file in toUpdate)
         {
-            string newFilename = GenerateBlobFileName(blobPathMembers, attributes, file.FileName);
-            var updatedBlobClient = await UpdateBlob(_appsettings.Value.BlobConnectionString, _appsettings.Value.BlobContainer,file.BlobPath,newFilename);
+            string newFilename = _azureBlobService.GenerateBlobFileName(blobPathMembers, attributes, file.FileName);
+            var updatedBlobUrl = await _azureBlobService.UpdateBlob(file.BlobPath, newFilename);
             file.BlobPath = newFilename;
-            file.BlobUrl = updatedBlobClient.Uri.AbsoluteUri;
+            file.BlobUrl = updatedBlobUrl;
         }
 
         _dbService.UpdateJobFiles(toUpdate);
     }
 
-
-    private async Task<BlobClient> UpdateBlob(string connectionString, string containerName, string existingFileName,
-        string newFileName)
-    {
-        var blobContainerClient = new BlobContainerClient(connectionString, containerName);
-        var existingBlobClient = blobContainerClient.GetBlobClient(existingFileName);
-        var newBlobClient = blobContainerClient.GetBlobClient(newFileName);
-
-        var poller = await newBlobClient.StartCopyFromUriAsync(existingBlobClient.Uri);
-        await poller.WaitForCompletionAsync();
-
-        /* test code to ensure that blob and its properties/metadata are copied over
-        const prop1 = await blobClient.getProperties();
-        const prop2 = await newBlobClient.getProperties();
-
-        if (prop1.contentLength !== prop2.contentLength) {
-          throw new Error("Expecting same size between copy source and destination");
-        }
-
-        if (prop1.contentEncoding !== prop2.contentEncoding) {
-          throw new Error("Expecting same content encoding between copy source and destination");
-        }
-
-        if (prop1.metadata.keya !== prop2.metadata.keya) {
-          throw new Error("Expecting same metadata between copy source and destination");
-        }
-        */
-
-        await existingBlobClient.DeleteIfExistsAsync();
-
-        return newBlobClient;
-    }
 
     private List<JobAttribute> ParseJobAttributes(List<string> attrs)
     {
@@ -211,18 +181,15 @@ public class JobsService : IJobsService
         List<JobFile> jobFiles = new List<JobFile>();
         foreach (var file in addedFiles)
         {
-            var fileName = GenerateBlobFileName(path, attributes, file.FileName);
+            var fileName = _azureBlobService.GenerateBlobFileName(path, attributes, file.FileName);
 
-            Stream myBlob = file.OpenReadStream();
-            var blobClient = new BlobContainerClient(connectionString, containerName);
-            var blob = blobClient.GetBlobClient(fileName);
-            if (!blob.Exists())
-                await blob.UploadAsync(myBlob);
+            Stream fileStream = file.OpenReadStream();
+            var blobUrl = await _azureBlobService.UploadBlob(fileName, fileStream);
 
             jobFiles.Add(new JobFile()
             {
                 BlobPath = fileName,
-                BlobUrl = blob.Uri.AbsoluteUri,
+                BlobUrl = blobUrl,
                 FileName = file.FileName,
                 Id = Guid.NewGuid().ToString(),
                 JobId = job.Id,
@@ -233,30 +200,14 @@ public class JobsService : IJobsService
         return jobFiles;
     }
 
-    private string GenerateBlobFileName(List<PathMember> path, List<JobAttribute> attributes, string FileName)
-    {
-        string blobFileName = "";
-        for (int i = 0; i < path.Count; i++)
-        {
-            var member = path.FirstOrDefault(x => x.Order == i);
-            var value = attributes.FirstOrDefault(x => x.id == member?.Id);
-            blobFileName += value.value;
-            blobFileName += "/";
-        }
-
-        blobFileName += FileName;
-        return blobFileName;
-    }
-
     private async void DeleteJobFilesInBlob(List<JobFile> files, string connectionString, string containerName)
     {
         foreach (var file in files)
         {
-            var container = new BlobContainerClient(connectionString, containerName);
-            var blob = container.GetBlobClient(file.BlobPath);
-            await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+            await _azureBlobService.DeleteBlob(file.BlobPath);
         }
     }
+
 
     public CompleteJobInfo GetCompleteJob(string jobId)
     {
@@ -282,5 +233,29 @@ public class JobsService : IJobsService
         _dbService.DeleteJobFiles(jobFiles);
         _dbService.DeleteJobAttributes(jobId);
         _dbService.DeleteJob(jobId);
+    }
+
+    public async Task<string> DownloadJob(string jobId)
+    {
+        string tempDir = Path.Combine(Directory.GetCurrentDirectory(), _appsettings.Value.TempDirName);
+        string jobDir = Path.Combine(tempDir, jobId);
+        _tempStorageService.PrepareJobDir(jobDir);
+        var jobFiles = _dbService.GetJobFiles(jobId);
+
+        foreach (var jobFile in jobFiles)
+        {
+            string path = Path.Combine(jobDir, jobFile.FileName);
+            var fileStream = await _azureBlobService.DownloadBlob(jobFile.BlobPath);
+            using (Stream stream = new FileStream(path, FileMode.Create))
+            {
+                await fileStream.CopyToAsync(stream);
+            }
+
+            fileStream.Close();
+        }
+
+        var zipPath = Path.Combine(tempDir, $"{jobId}.zip");
+        _tempStorageService.ArchiveDirectory(zipPath, jobDir);
+        return zipPath;
     }
 }

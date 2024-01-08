@@ -51,4 +51,11 @@ public class JobsController : Controller
         _jobsService.DeleteJob(model.JobId);
         return Ok();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> DownloadJob(string jobId)
+    {
+        var zipPath = await _jobsService.DownloadJob(jobId);
+        return File(System.IO.File.ReadAllBytes(zipPath), "application/zip", System.IO.Path.GetFileName(zipPath));
+    }
 }
