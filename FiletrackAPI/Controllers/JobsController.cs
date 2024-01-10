@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using FiletrackAPI.Entities;
+using FiletrackApi.Models;
 using FiletrackAPI.Models;
 using FiletrackAPI.Services;
 using FiletrackWebInterface.Entities;
@@ -24,38 +25,59 @@ public class JobsController : Controller
     {
         return StatusCode(await _jobsService.CreateJob(model));
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> UpdateJob([FromForm] UpdateJobRequestModel model)
     {
         return StatusCode(await _jobsService.UpdateJob(model));
     }
-    
+
     [HttpPost]
     public IActionResult GetJobsInState(GetJobsRequest model)
     {
         var res = _jobsService.GetJobsInState(model.State);
         return Ok(res);
     }
-    
+
     [HttpPost]
     public IActionResult GetCompleteJob(JobRequest model)
     {
         var res = _jobsService.GetCompleteJob(model.JobId);
         return Ok(res);
     }
-    
+
     [HttpPost]
     public IActionResult DeleteJob(JobRequest model)
     {
         _jobsService.DeleteJob(model.JobId);
         return Ok();
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> DownloadJob(string jobId)
     {
         var zipPath = await _jobsService.DownloadJob(jobId);
         return File(System.IO.File.ReadAllBytes(zipPath), "application/zip", System.IO.Path.GetFileName(zipPath));
+    }
+
+    [HttpPost]
+    public IActionResult RevertJob(JobRevertRequest model)
+    {
+        _jobsService.RevertJob(model);
+        return Ok();
+    }
+    
+    [HttpPost]
+    public IActionResult GetJobReport(JobRequest model)
+    {
+        var report = _jobsService.GetJobReport(model.JobId);
+        return Ok(report);
+    }
+
+    [HttpPost]
+    public IActionResult MoveJobToProduction(JobRequest model)
+    {
+        _jobsService.MoveJobToProduction(model.JobId);
+        return Ok();
     }
 }

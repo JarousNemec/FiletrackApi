@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Aspose.Zip;
 using FiletrackAPI.Entities;
+using FiletrackApi.Models;
 using FiletrackAPI.Models;
 using FiletrackAPI.Services;
 using FiletrackWebInterface.Entities;
@@ -18,6 +19,9 @@ public interface IJobsService
     Task<int> UpdateJob(UpdateJobRequestModel model);
     void DeleteJob(string jobId);
     Task<string> DownloadJob(string jobId);
+    void MoveJobToProduction(string jobId);
+    void RevertJob(JobRevertRequest model);
+    string GetJobReport(string jobId);
 }
 
 public class JobsService : IJobsService
@@ -38,13 +42,14 @@ public class JobsService : IJobsService
     {
         List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
 
-        List<string> jobsIds = _dbService.GetJobsInState(state);
-        foreach (var id in jobsIds)
+        List<Job> jobInfo = _dbService.GetJobsInState(state);
+        foreach (var job in jobInfo)
         {
             Dictionary<string, string> basicJobData = new Dictionary<string, string>();
 
-            var atrs = _dbService.GetJobAttributes(id);
-            basicJobData.Add("id", id);
+            var atrs = _dbService.GetJobAttributes(job.Id);
+            basicJobData.Add("id", job.Id);
+            basicJobData.Add("state", ((int)job.State).ToString());
             foreach (var atr in atrs)
             {
                 basicJobData.Add(atr.id, atr.value);
@@ -144,7 +149,7 @@ public class JobsService : IJobsService
         }
 
         _dbService.DeleteJobFiles(toDelete);
-        DeleteJobFilesInBlob(toDelete, _appsettings.Value.BlobConnectionString, _appsettings.Value.BlobContainer);
+        DeleteJobFilesInBlob(toDelete);
 
         if (!attributesUpdated)
             return;
@@ -200,7 +205,7 @@ public class JobsService : IJobsService
         return jobFiles;
     }
 
-    private async void DeleteJobFilesInBlob(List<JobFile> files, string connectionString, string containerName)
+    private async void DeleteJobFilesInBlob(List<JobFile> files)
     {
         foreach (var file in files)
         {
@@ -213,7 +218,7 @@ public class JobsService : IJobsService
     {
         CompleteJobInfo info = new CompleteJobInfo();
         info.Id = jobId;
-        info.Description = _dbService.GetBasicJobInfo(jobId).Description;
+        info.Description = _dbService.GetJob(jobId).Description;
         var tags = _dbService.GetAllTags();
         var atrs = _dbService.GetJobAttributes(jobId);
         foreach (var atr in atrs)
@@ -229,7 +234,7 @@ public class JobsService : IJobsService
     public void DeleteJob(string jobId)
     {
         var jobFiles = _dbService.GetJobFiles(jobId);
-        DeleteJobFilesInBlob(jobFiles, _appsettings.Value.BlobConnectionString, _appsettings.Value.BlobContainer);
+        DeleteJobFilesInBlob(jobFiles);
         _dbService.DeleteJobFiles(jobFiles);
         _dbService.DeleteJobAttributes(jobId);
         _dbService.DeleteJob(jobId);
@@ -257,5 +262,26 @@ public class JobsService : IJobsService
         var zipPath = Path.Combine(tempDir, $"{jobId}.zip");
         _tempStorageService.ArchiveDirectory(zipPath, jobDir);
         return zipPath;
+    }
+
+    public void MoveJobToProduction(string jobId)
+    {
+        var job = _dbService.GetJob(jobId);
+        job.State = JobState.InProduction;
+        _dbService.UpdateJob(job);
+    }
+    
+    public string GetJobReport(string jobId)
+    {
+        var report = _dbService.GetJobReport(jobId);
+        return report.Report;
+    }
+
+    public void RevertJob(JobRevertRequest model)
+    {
+        var job = _dbService.GetJob(model.JobId);
+        job.State = JobState.Saved;
+        _dbService.UpdateJob(job);
+        _dbService.SetJobReport(model.JobId, model.JobReport);
     }
 }

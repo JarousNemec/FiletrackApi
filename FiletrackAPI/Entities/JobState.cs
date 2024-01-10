@@ -3,6 +3,7 @@
 public enum JobState
 {
     Saved = 0,
-    ToProduction = 1,
-    Qa = 2
+    InProduction = 1,
+    Qa = 2,
+    Reported = 3
 }

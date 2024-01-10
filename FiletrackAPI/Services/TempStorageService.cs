@@ -15,22 +15,33 @@ public class TempStorageService : ITempStorageService
 {
     private static bool _tempCleared = false;
     private readonly IOptions<AppSettings> _appsettings;
-    public TempStorageService(IOptions<AppSettings> appSettings)
+    private readonly ILogger<TempStorageService> _logger;
+
+    public TempStorageService(IOptions<AppSettings> appSettings, ILogger<TempStorageService> logger)
     {
         _appsettings = appSettings;
+        _logger = logger;
         if (!_tempCleared)
             PrepareTempDir();
     }
+
     public void ArchiveDirectory(string destination, string target)
     {
-        using (FileStream zipFile = File.Open(destination, FileMode.Create))
+        try
         {
-            using (Archive archive = new Archive())
+            using (FileStream zipFile = File.Open(destination, FileMode.Create))
             {
-                DirectoryInfo dirToArchive = new DirectoryInfo(target);
-                archive.CreateEntries(dirToArchive);
-                archive.Save(zipFile);
+                using (Archive archive = new Archive())
+                {
+                    DirectoryInfo dirToArchive = new DirectoryInfo(target);
+                    archive.CreateEntries(dirToArchive);
+                    archive.Save(zipFile);
+                }
             }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
         }
     }
 
@@ -44,19 +55,26 @@ public class TempStorageService : ITempStorageService
 
     public void PrepareTempDir()
     {
-        DirectoryInfo di =
-            new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), _appsettings.Value.TempDirName));
-
-        foreach (FileInfo file in di.GetFiles())
+        try
         {
-            file.Delete();
-        }
+            DirectoryInfo di =
+                new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), _appsettings.Value.TempDirName));
 
-        foreach (DirectoryInfo dir in di.GetDirectories())
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+
+            foreach (DirectoryInfo dir in di.GetDirectories())
+            {
+                dir.Delete(true);
+            }
+
+            _tempCleared = true;
+        }
+        catch (Exception e)
         {
-            dir.Delete(true);
+            _logger.LogError(e.Message);
         }
-
-        _tempCleared = true;
     }
 }
