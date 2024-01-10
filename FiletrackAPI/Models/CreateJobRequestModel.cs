@@ -6,8 +6,9 @@ public class CreateJobRequestModel
 {
     public string JobInfo { get; set; }
     
-    public List<string> JobAttributes { get; set; }
-    
+    [Required(ErrorMessage = "Please set attributes")]
+    public List<string> JobAttributes { get; set; } = new List<string>();
+
     [Required(ErrorMessage = "Please select files")]
-    public List<IFormFile> Jobfiles { get; set; }
+    public List<IFormFile> Jobfiles { get; set; } = new List<IFormFile>();
 }

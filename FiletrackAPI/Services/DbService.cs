@@ -31,6 +31,7 @@ public interface IDbService
     void DeleteJob(string jobId);
     void SetJobReport(string jobId, string jobReport);
     JobReport GetJobReport(string jobId);
+    void DeleteJobReport(string jobId);
 }
 
 public class DbService : IDbService
@@ -146,7 +147,7 @@ public class DbService : IDbService
     public void AddJob(Job job)
     {
         string query =
-            "Insert Into job (id, state, authorId, description) values (@Id, @State, @AuthorId, @Description)";
+            "Insert Into job (id, state, author_id, description) values (@Id, @State, @AuthorId, @Description)";
         var parameters = new List<SqlParameter>
         {
             new("@Id", job.Id), new("@State", job.State), new("@AuthorId", job.AuthorId),
@@ -159,7 +160,7 @@ public class DbService : IDbService
     {
         using var connection = new SqlConnection(_connString);
         string query =
-            "UPDATE job SET id = @Id, state = @State, authorId = @AuthorId, description = @Description WHERE id = @Id";
+            "UPDATE job SET id = @Id, state = @State, author_id = @AuthorId, description = @Description WHERE id = @Id";
         var parameters = new List<SqlParameter>
         {
             new("@Id", job.Id), new("@State", job.State), new("@AuthorId", job.AuthorId),
@@ -170,7 +171,7 @@ public class DbService : IDbService
 
     public Job GetJob(string jobId)
     {
-        string query = "select id, state, authorId, description from job where id = @Id";
+        string query = "select id, state, author_id, description from job where id = @Id";
         var parameters = new List<SqlParameter>
         {
             new("@Id", jobId)
@@ -197,7 +198,7 @@ public class DbService : IDbService
 
     public List<Job> GetJobsInState(JobState state)
     {
-        string query = $"select id from job where state = @State";
+        string query = $"select id, state from job where state = @State";
         var parameters = new List<SqlParameter>
         {
             new("@State", (int)state)
@@ -219,7 +220,8 @@ public class DbService : IDbService
         {
             var newJob = new Job();
             newJob.Id = reader.GetString(0);
-            newJob.State = (JobState)int.Parse(reader.GetString(1));
+            newJob.State = (JobState)reader.GetInt16(1);
+            result.Add(newJob);
         }
 
         reader.Close();
@@ -229,7 +231,7 @@ public class DbService : IDbService
 
     public List<JobAttribute> GetJobAttributes(string jobId)
     {
-        string query = "select attributeId, value from job_attribute where job_id = @JobId";
+        string query = "select attribute_id, value from job_attribute where job_id = @JobId";
         var parameters = new List<SqlParameter>
         {
             new("@JobId", jobId)
@@ -329,6 +331,13 @@ public class DbService : IDbService
     public void DeleteJob(string jobId)
     {
         string query = "DELETE FROM job WHERE id = @Id";
+        var parameters = new List<SqlParameter>() { new("@Id", jobId) };
+        ExecuteNonQuery(query, parameters);
+    }
+    
+    public void DeleteJobReport(string jobId)
+    {
+        string query = "DELETE FROM job_report WHERE job_id = @Id";
         var parameters = new List<SqlParameter>() { new("@Id", jobId) };
         ExecuteNonQuery(query, parameters);
     }

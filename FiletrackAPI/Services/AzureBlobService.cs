@@ -52,7 +52,7 @@ public class AzureBlobService : IAzureBlobService
         var blobContainerClient = new BlobContainerClient(_connectionString, _containerName);
         var existingBlobClient = blobContainerClient.GetBlobClient(existingFileName);
         var newBlobClient = blobContainerClient.GetBlobClient(newFileName);
-        if (await newBlobClient.ExistsAsync())
+        if (await existingBlobClient.ExistsAsync())
         {
             var poller = await newBlobClient.StartCopyFromUriAsync(existingBlobClient.Uri);
             await poller.WaitForCompletionAsync();

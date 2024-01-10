@@ -237,6 +237,7 @@ public class JobsService : IJobsService
         DeleteJobFilesInBlob(jobFiles);
         _dbService.DeleteJobFiles(jobFiles);
         _dbService.DeleteJobAttributes(jobId);
+        _dbService.DeleteJobReport(jobId);
         _dbService.DeleteJob(jobId);
     }
 
@@ -280,7 +281,7 @@ public class JobsService : IJobsService
     public void RevertJob(JobRevertRequest model)
     {
         var job = _dbService.GetJob(model.JobId);
-        job.State = JobState.Saved;
+        job.State = JobState.Reported;
         _dbService.UpdateJob(job);
         _dbService.SetJobReport(model.JobId, model.JobReport);
     }
