@@ -68,9 +68,13 @@ public class AzureBlobService : IAzureBlobService
     {
         var blobContainerClient = new BlobContainerClient(_connectionString, _containerName);
         var blobClient = blobContainerClient.GetBlobClient(filename);
-        MemoryStream output = new MemoryStream();
+        Stream output = new MemoryStream();
         if (await blobClient.ExistsAsync())
-            await blobClient.DownloadToAsync(output);
+        {
+            BlobDownloadInfo downloadInfo = await blobClient.DownloadAsync();
+            return downloadInfo.Content;
+        }
+            
         return output;
     }
     
